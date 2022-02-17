@@ -1,4 +1,6 @@
+import os
 import random
+from namegen import lc, new_word
 
 #    singular    possesive     "of"...
 targets = (
@@ -31,6 +33,7 @@ targets = (
     ('spirit',  'spirit\'s',  'spirits',),
     ('storm',   'storm\'s',   'the storm',),
     ('sun',     'sun\'s',     'the sun',),
+    ('truth',   'truth\'s',   'truth',),
     ('thunder', 'thunder\'s', 'thunder',),
     ('world',   'world\'s',   'the world',),
     
@@ -74,5 +77,14 @@ titles = (
 def generate_title():
     return random.choice(titles).format(*random.choice(targets))
 
+def named_title():
+    langfiles = os.listdir('name_files')
+    (hash, start) = lc(os.path.join('name_files',random.choice(langfiles)))
+    name1 = new_word(hash, start, 3, 5)
+    name2 = new_word(hash, start, 6, 10)
+
+    return ' '.join((name1, name2, 'the', generate_title()))
+    
 if __name__ == '__main__':
-    print (generate_title())
+    print(named_title())
+    #print (generate_title())
