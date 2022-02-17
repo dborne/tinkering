@@ -25,15 +25,19 @@ def lc(file, ignore_case=False):
     start_pairs = set()
     while len(data) > 2:
         (first, second, third) = data[0:3]
-        hash.setdefault(first+second, set()).add(third)
-        if first == ' ': start_pairs.add(second+third)
+        if first == ' ': 
+            start_pairs.add(second+third)
+        elif second != ' ':
+            hash.setdefault(first+second, set()).add(third)
         data = data[1:]
     
     # sets to lists for more efficient random.choice-ing
     hash = {k:list(v) for (k,v) in hash.items()}
     start_pairs = list(start_pairs)
     
-    #print (sorted(hash.keys()))
+    #print ([(key,hash[key]) for key in sorted(hash.keys())])
+    #for key in sorted(hash.keys()):
+    #    print (key,hash[key])
     return (hash, start_pairs)
 
 def new_word(hash, start_pairs, min_length, max_length):
@@ -46,14 +50,17 @@ def new_word(hash, start_pairs, min_length, max_length):
             if len(word) >= min_length:
                 done = True
             elif len(hash[pair]) == 1:
-                #previous pair leads only to space, back up one character
-                # TODO: fix potential infinite loop here
-                word = word[:-1]
+                while (len(hash[word[-2:]]) == 1) and len(word)>2:
+                    word = word[:-1]
+                if len(word) == 2:
+                    word = random.choice(start_pairs)
         else :
             word += letter
-            # TODO: end words near max_length more naturally (lookahead for pair->space matches)
             if len(word) >= max_length:
-                done = True
+                while (' ' not in hash[word[-2:]] and len(word)>min_length):
+                    word = word[:-1]
+                if len(word) >= min_length:
+                    done = True
                 
     return word
 
